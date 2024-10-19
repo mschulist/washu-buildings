@@ -4,11 +4,7 @@ import DeckGL, { MapViewState, PickingInfo, PolygonLayer } from 'deck.gl'
 import { useEffect, useState } from 'react'
 import { Map } from 'react-map-gl/maplibre'
 import { useRouter } from 'next/navigation'
-import { scaleOrdinal } from 'd3-scale'
-import { schemeCategory10 } from 'd3-scale-chromatic'
-import hexRgb from 'hex-rgb'
 import { MapLegend } from './MapLegend'
-import { MapFilter } from './MapFilter'
 import { CreateColorMap } from '@/map_utils/colormaps'
 
 export type BlockProperties = {
