@@ -1,6 +1,12 @@
-export function FloatingBox() {
+import { BuildingModel } from '@/db_utils/constants'
+
+export type MapFilterFuncs = {
+  [key: string]: (building: BuildingModel) => boolean
+}
+
+export function MapFilter({ filterFuncs }: { filterFuncs: MapFilterFuncs }) {
   return (
-    <div className='floating-box'>
+    <div className='top-3 right-3 fixed z-10'>
       <ul className='menu bg-base-200 rounded-box w-56'>
         <li>
           <details open>
