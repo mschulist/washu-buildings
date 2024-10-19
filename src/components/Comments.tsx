@@ -1,6 +1,12 @@
 import React, { useState } from 'react'
 
-export function CommentDisplay({ comments }: { comments: string[] }) {
+export function CommentDisplay({
+  comments,
+  id,
+}: {
+  comments: string[]
+  id: string
+}) {
   const [commentsVisible, setCommentsVisible] = useState(false)
   const [commentList, setCommentList] = useState(comments)
   const [newComment, setNewComment] = useState('')
@@ -9,11 +15,28 @@ export function CommentDisplay({ comments }: { comments: string[] }) {
     setCommentsVisible(!commentsVisible)
   }
 
+  function addCommentToDB(comments: string[]) {
+    console.log(comments)
+    fetch('api/updateSingleBuilding', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ buildingData: { comments, id } }),
+    }).then((res) => {
+      if (!res.ok) {
+        throw new Error('Error adding comment')
+      }
+      console.log('Comment added')
+    })
+  }
+
   const handleAddComment = (event: React.FormEvent) => {
     event.preventDefault()
     if (newComment.trim()) {
       setCommentList([...commentList, newComment])
       setNewComment('')
+      addCommentToDB([...commentList, newComment])
     }
   }
 
@@ -28,7 +51,7 @@ export function CommentDisplay({ comments }: { comments: string[] }) {
           </button>
         </div>
         {commentsVisible && (
-          <div className='absolute bottom-12 right-4 w-128 bg-base-200 rounded-box shadow-lg'>
+          <div className='absolute bottom-12 right-4 w-128 bg-gray-400 rounded-box shadow-lg'>
             <div className='p-4'>
               <h3 className='font-bold'>Comments:</h3>
               <ul className='max-h-48 overflow-y-auto'>

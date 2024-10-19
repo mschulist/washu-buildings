@@ -16,6 +16,7 @@ import {
 } from '@/map_utils/colormaps'
 import { MapFilter } from './MapFilter'
 import { PopupModal } from './PopupModal'
+import { SplashScreen } from './SplashScreen'
 
 export type BlockProperties = {
   height: number
@@ -41,39 +42,69 @@ export type BlockProperties = {
 // ]
 
 const pickupStations = [
-  ['S-40, Clocktower', [-90.3129323147499, 38.6453046559579]],
-  ['Mallinckrodt Bus Plaza', [-90.3088805661316, 38.6469369100415]],
-  ['Snow Way', [-90.3139231126892, 38.6503492374085]],
-  ['Millbrook Garage', [-90.3117158128975, 38.6501115105297]],
-  ['Skinker & FPP', [-90.300904454631, 38.6488991631577]],
-  ['East End Garage', [-90.3041283846558, 38.6465841895706]],
-  ['Mallinckrodt Bus Plaza', [-90.3088805661316, 38.6469369100415]],
-  ['S-40, Habif Health', [-90.3157644736801, 38.6455761224313]],
-  ['S-40, Clocktower', [-90.3129323147499, 38.6453046559579]],
+  {
+    name: 'S-40, Clocktower Station',
+    loc: [-90.3129323147499, 38.6453046559579],
+  },
+  {
+    name: 'Mallinckrodt Bus Plaza Station',
+    loc: [-90.3088805661316, 38.6469369100415],
+  },
+  { name: 'Snow Way Station', loc: [-90.3139231126892, 38.6503492374085] },
+  {
+    name: 'Millbrook Garage Station',
+    loc: [-90.3117158128975, 38.6501115105297],
+  },
+  { name: 'Skinker & FPP Station', loc: [-90.300904454631, 38.6488991631577] },
+  {
+    name: 'East End Garage Station',
+    loc: [-90.3041283846558, 38.6465841895706],
+  },
+  {
+    name: 'Mallinckrodt Bus Plaza Station',
+    loc: [-90.3088805661316, 38.6469369100415],
+  },
+  {
+    name: 'S-40, Habif Health Station',
+    loc: [-90.3157644736801, 38.6455761224313],
+  },
+  {
+    name: 'S-40, Clocktower Station',
+    loc: [-90.3129323147499, 38.6453046559579],
+  },
 ]
 
 function radians(degrees: number) {
   return (degrees * Math.PI) / 180
 }
 
-const pickupPolygons = pickupStations.map(([_, center], __) => {
+const pickupData = pickupStations.map((pickup, _) => {
   const N = 24
   const r = 0.0001
-  return Array.from({ length: N }, (_, i) => {
+  const loc = pickup.loc
+
+  const polygon = Array.from({ length: N }, (_, i) => {
     const theta = (2.0 * Math.PI * i) / N
     return [
-      center[0] + r * Math.cos(theta),
-      center[1] + r * Math.sin(theta) * Math.cos(radians(center[1])),
+      loc[0] + r * Math.cos(theta),
+      loc[1] + r * Math.sin(theta) * Math.cos(radians(loc[1])),
     ]
   })
-})
 
-const pickupData = pickupPolygons.map((polygon) => {
   return {
+    name: pickup.name,
     height: 6.0,
     polygon,
   }
 })
+
+function interp(
+  a: [number, number],
+  b: [number, number],
+  t: number,
+): [number, number] {
+  return [(1 - t) * a[0] + t * b[0], (1 - t) * a[1] + t * b[1]]
+}
 
 function distance(a: [number, number], b: [number, number]) {
   const center_lat = (a[1] + b[1]) / 2
@@ -86,8 +117,9 @@ function distance(a: [number, number], b: [number, number]) {
 }
 
 function makeTrip(path: [number, number][]) {
-  // Avoids a bug (?) in the trips rendering
-  if (path[0] === path[path.length - 1]) path.push(path[-1])
+  // // Avoids a bug (?) in the trips rendering
+  // if (path[0] === path[path.length - 1])
+  //   path[path.length - 1] = interp(path[path.length - 2], path[path.length - 1], 0.999)
 
   // Total distance from start to this point in the path
   let distances: number[] = []
@@ -110,41 +142,51 @@ function makeTrip(path: [number, number][]) {
   }
 }
 
-const trips = [
-  makeTrip([
-    [-90.31292789999999, 38.6453327],
-    [-90.3115199, 38.6451929],
-    [-90.31086250000001, 38.6472135],
-    [-90.30888689999999, 38.6469813],
-    [-90.3081059, 38.6469089],
-    [-90.3081502, 38.646658],
-    [-90.3154372, 38.6473597],
-    [-90.3151462, 38.6504833],
-    [-90.31392729999999, 38.6503901],
-    [-90.3117114, 38.6501428],
-    [-90.3116273, 38.6501356],
-    [-90.3114008, 38.65067],
-    [-90.3007167, 38.6492647],
-    [-90.30076989999999, 38.6488866],
-    [-90.3012129, 38.6460183],
-    [-90.3041713, 38.6462752],
-    [-90.3041404, 38.6465043],
-    [-90.3041288, 38.6465842],
-    [-90.3041713, 38.6462752],
-    [-90.3081502, 38.646658],
-    [-90.30803759999999, 38.64733289999999],
-    [-90.308865, 38.6471446],
-    [-90.30888689999999, 38.6469813],
-    [-90.3081059, 38.6469089],
-    [-90.3081502, 38.646658],
-    [-90.3154372, 38.6473597],
-    [-90.3161259, 38.6456412],
-    [-90.31576009999999, 38.6456041],
-    [-90.31292789999999, 38.6453327],
-  ]),
-]
+function offsetTrip(trip, offset: number) {
+  return {
+    path: trip.path,
+    timestamps: trip.timestamps.map((t) => (t + offset) % 1),
+  }
+}
 
-const trailLength = 0.2
+const trip = makeTrip([
+  [-90.31292789999999, 38.6453327],
+  [-90.3115199, 38.6451929],
+  [-90.31086250000001, 38.6472135],
+  [-90.30888689999999, 38.6469813],
+  [-90.3081059, 38.6469089],
+  [-90.3081502, 38.646658],
+  [-90.3154372, 38.6473597],
+  [-90.3151462, 38.6504833],
+  [-90.31392729999999, 38.6503901],
+  [-90.3117114, 38.6501428],
+  [-90.3116273, 38.6501356],
+  [-90.3114008, 38.65067],
+  [-90.3007167, 38.6492647],
+  [-90.30076989999999, 38.6488866],
+  [-90.3012129, 38.6460183],
+  [-90.3041713, 38.6462752],
+  [-90.3041404, 38.6465043],
+  [-90.3041288, 38.6465842],
+  [-90.3041713, 38.6462752],
+  [-90.3081502, 38.646658],
+  [-90.30803759999999, 38.64733289999999],
+  [-90.308865, 38.6471446],
+  [-90.30888689999999, 38.6469813],
+  [-90.3081059, 38.6469089],
+  [-90.3081502, 38.646658],
+  [-90.3154372, 38.6473597],
+  [-90.3161259, 38.6456412],
+  [-90.31576009999999, 38.6456041],
+  [-90.31292789999999, 38.6453327],
+])
+
+// const trips = Array.from({length: 10}, (_, i) => offsetTrip(trip, i / 10))
+const trips = Array.from({ length: 10 }, (_, i) =>
+  offsetTrip(trip, Math.random()),
+)
+
+const trailLength = 0.1
 
 function getTooltip({ object }: PickingInfo) {
   if (!object) {
@@ -272,7 +314,7 @@ export function MapBox() {
       getTimestamps: (d) => d.timestamps,
       getColor: [255, 50, 50],
       opacity: 0.3,
-      widthMinPixels: 5,
+      widthMinPixels: 4,
       capRounded: true,
       jointRounded: true,
       trailLength,
@@ -293,7 +335,7 @@ export function MapBox() {
       getPolygon: (f) => f.polygon,
       getLineColor: [255, 255, 255],
       getFillColor: [255, 255, 255],
-      // pickable: true,
+      pickable: true,
     }),
   ]
 
@@ -316,6 +358,8 @@ export function MapBox() {
           />
         </Map>
       </DeckGL>
+
+      {/* <SplashScreen /> */}
     </>
   )
 }

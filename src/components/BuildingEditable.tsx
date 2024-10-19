@@ -11,7 +11,6 @@ export function BuildingEditable({
   setBuildingDetails: (buildingDetails: BuildingModel) => void
   isEditing: boolean
 }) {
-  const [name, setName] = useState(buildingDetails.name)
   const [generalInfo, setGeneralInfo] = useState(buildingDetails.general_info)
   const [boardInfo, setBoardInfo] = useState(buildingDetails.board_info)
   const [printerInfo, setPrinterInfo] = useState(buildingDetails.printer_info)
@@ -20,22 +19,15 @@ export function BuildingEditable({
     if (!isEditing) {
       setBuildingDetails({
         ...buildingDetails,
-        name,
         general_info: generalInfo,
         board_info: boardInfo,
         printer_info: printerInfo,
       })
     }
-  }, [name, generalInfo, boardInfo, printerInfo])
+  }, [isEditing])
 
   return (
-    <div className='grid grid-cols-3 gap-4 bg-base-200'>
-      <EditableField
-        name='Name'
-        value={name}
-        onChange={setName}
-        isEditing={isEditing}
-      />
+    <div className='grid grid-cols-3 gap-4 p-4 bg-background rounded-2xl shadow-lg text-foreground'>
       <EditableField
         name='General Info'
         value={generalInfo}

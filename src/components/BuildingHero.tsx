@@ -8,7 +8,7 @@ export function BuildingHero({
   buildingDetails: BuildingModel
 }) {
   return (
-    <div className='hero bg-base-300 max-w-[75vw] rounded-3xl'>
+    <div className='hero max-w-[75vw] rounded-3xl bg-background text-foreground'>
       <div className='text-center hero-content'>
         <div className='max-w-3/6'>
           <h1 className='mb-5 text-5xl font-bold'>{buildingDetails.name}</h1>
@@ -18,6 +18,7 @@ export function BuildingHero({
               alt={buildingDetails.name}
               width={500}
               height={500}
+              className='rounded-lg shadow-lg'
             />
           )}
           {buildingDetails.general_info && (

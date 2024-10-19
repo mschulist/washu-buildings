@@ -42,28 +42,28 @@ export function CreateColorMap(
 
     // const colormap = scaleOrdinal(schemeCategory10).domain(propertySet)
     const colormap = scaleOrdinal([
-      "#f36e52",
-      "#f36c1e",
-      "#e1932e",
-      "#ebc93d",
-      "#b5ae2d",
-      "#d2ea4a",
-      "#94c446",
-      "#79ec36",
-      "#62d44d",
-      "#57b657",
-      "#64e991",
-      "#3a91fb",
-      "#658bfb",
-      "#8184fb",
-      "#b185ec",
-      "#b377f6",
-      "#d761f6",
-      "#e475dc",
-      "#f349e5",
-      "#f55ba3"
-    ]).domain(propertySet);
-    
+      '#f36e52',
+      '#f36c1e',
+      '#e1932e',
+      '#ebc93d',
+      '#b5ae2d',
+      '#d2ea4a',
+      '#94c446',
+      '#79ec36',
+      '#62d44d',
+      '#57b657',
+      '#64e991',
+      '#3a91fb',
+      '#658bfb',
+      '#8184fb',
+      '#b185ec',
+      '#b377f6',
+      '#d761f6',
+      '#e475dc',
+      '#f349e5',
+      '#f55ba3',
+    ]).domain(propertySet)
+
     const data = buildings.map((d) => {
       const [r, g, b] = hexRgb(colormap(d[property]), {
         format: 'array',

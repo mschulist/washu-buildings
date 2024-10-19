@@ -33,23 +33,24 @@ export function Building({ id }: { id: string }) {
     if (!buildingDetails) return
     if (isEditing) return
     console.log(buildingDetails)
-    fetch('api/updateSingleBuilding', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ buildingData: buildingDetails }),
-    })
-    console.log('Building updated')
+    setTimeout(() => {
+      fetch('api/updateSingleBuilding', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ buildingData: buildingDetails }),
+      })
+    }, 100)
   }, [isEditing])
 
   if (!buildingDetails) {
     return (
-      <div className='flex items-center justify-center h-screen bg-base-200'>
+      <div className='flex items-center justify-center h-screen bg-background'>
         <span className='loading loading-spinner loading-lg'></span>
       </div>
     )
   }
   return (
-    <div className='relative bg-base-200 w-full rounded-xl'>
+    <div className='relative bg-background text-foreground w-full rounded-xl p-6 shadow-lg'>
       <BuildingHero buildingDetails={buildingDetails} />
       <div className='flex flex-col px-16 w-full'>
         <EditCheckBox isEditing={isEditing} setIsEditing={setIsEditing} />
@@ -59,7 +60,10 @@ export function Building({ id }: { id: string }) {
           isEditing={isEditing}
         />
       </div>
-      <CommentDisplay comments={buildingDetails.comments} />
+      <CommentDisplay
+        comments={buildingDetails.comments}
+        id={buildingDetails.id}
+      />
     </div>
   )
 }

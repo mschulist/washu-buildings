@@ -14,7 +14,7 @@ export const MAP_DISPLAY_COLS = [
 ]
 
 export type BuildingModel = {
-  id: number
+  id: string
   name: string
   polygon: string
   height: number

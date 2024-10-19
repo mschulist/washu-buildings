@@ -4,6 +4,13 @@ import { NextResponse } from 'next/server'
 
 export async function POST(req: Request): Promise<NextResponse> {
   const { buildingData } = await req.json()
+  console.log(buildingData)
+  if (!buildingData.id) {
+    return NextResponse.json(
+      { success: false, error: 'No ID provided' },
+      { status: 400 },
+    )
+  }
   const supabase = createClient()
   const { error } = await supabase
     .from(DB_NAME)
