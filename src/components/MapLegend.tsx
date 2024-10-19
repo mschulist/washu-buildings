@@ -1,14 +1,12 @@
+export function firstLetterUppercase(str: string) {
+  const words = str.split(/[\s-_]+/)
+  return words
+    .map((word) => {
+      return word.charAt(0).toUpperCase() + word.slice(1)
+    })
+    .join(' ')
+}
 export function MapLegend({ colormap }: { colormap: Record<string, string> }) {
-  console.log(colormap)
-  function firstLetterUppercase(str: string) {
-    const words = str.split(' ')
-    return words
-      .map((word) => {
-        return word.charAt(0).toUpperCase() + word.slice(1)
-      })
-      .join(' ')
-  }
-
   return (
     <div className='z-10 left-3 fixed top-3'>
       <ul className='menu bg-base-200 rounded-box w-44'>
