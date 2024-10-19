@@ -4,7 +4,7 @@ export function EditCheckBox({
   setIsEditing: (isEditing: boolean) => void
 }) {
   return (
-    <div className='form-control'>
+    <div className='form-control w-10'>
       <label className='label cursor-pointer'>
         <span className='label-text'>Edit</span>
         <input

@@ -28,4 +28,6 @@ export type BuildingModel = {
   website: string
   board_info: string
   printer_info: string
+  department: string
+  comments: string[]
 }
