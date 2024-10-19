@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { BuildingHero } from './BuildingHero'
 import { BuildingEditable } from './BuildingEditable'
 import { EditCheckBox } from './EditCheckbox'
+import { BackButton } from './BackButton'
 
 export function Building({ id }: { id: string }) {
   const [buildingDetails, setBuildingDetails] = useState<BuildingModel | null>(
@@ -36,7 +37,8 @@ export function Building({ id }: { id: string }) {
     )
   }
   return (
-    <div className='flex flex-col items-center justify-center min-h-screen bg-base-200 py-10'>
+    <div className='flex flex-col items-center min-h-screen bg-base-200 py-10'>
+      <BackButton />
       <BuildingHero buildingDetails={buildingDetails} />
       <EditCheckBox setIsEditing={setIsEditing} />
       <BuildingEditable

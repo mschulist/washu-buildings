@@ -10,6 +10,7 @@ export const MAP_DISPLAY_COLS = [
   'blackboard',
   'food',
   'study_rooms',
+  'department',
 ]
 
 export type BuildingModel = {
