@@ -1,4 +1,3 @@
-import { BuildingModel } from '@/db_utils/constants'
 import { ColormapProps } from '@/map_utils/colormaps'
 import { firstLetterUppercase } from './MapLegend'
 
