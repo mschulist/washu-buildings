@@ -5,6 +5,9 @@ export type MapFilterFuncs = {
 }
 
 export function MapFilter({ filterFuncs }: { filterFuncs: MapFilterFuncs }) {
+  filterFuncs['test'] = (building) => {
+    return building.name === 'test'
+  }
   return (
     <div className='top-3 right-3 fixed z-10'>
       <ul className='menu bg-base-200 rounded-box w-56'>

@@ -1,5 +1,4 @@
 import { BlockProperties } from '@/components/Map'
-import { BuildingModel } from '@/db_utils/constants'
 import { scaleOrdinal } from 'd3-scale'
 import { schemeCategory10 } from 'd3-scale-chromatic'
 import hexRgb from 'hex-rgb'
