@@ -12,13 +12,12 @@ const config: Config = {
       colors: {
         background: 'var(--background)',
         foreground: 'var(--foreground)',
-        accent: '#3beb7c',
       },
     },
   },
+  plugins: [daisyui],
   daisyui: {
     themes: ['dim'],
   },
 }
-
 export default config

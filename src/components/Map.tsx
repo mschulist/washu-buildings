@@ -18,6 +18,7 @@ import { MapFilter } from './MapFilter'
 import { PopupModal } from './PopupModal'
 import { SplashScreen } from './SplashScreen'
 
+
 export type BlockProperties = {
   height: number
   name: string
@@ -148,6 +149,7 @@ function offsetTrip(trip, offset: number) {
     timestamps: trip.timestamps.map((t) => (t + offset) % 1),
   }
 }
+
 
 const trip = makeTrip([
   [-90.31292789999999, 38.6453327],

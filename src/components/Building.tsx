@@ -33,24 +33,23 @@ export function Building({ id }: { id: string }) {
     if (!buildingDetails) return
     if (isEditing) return
     console.log(buildingDetails)
-    setTimeout(() => {
-      fetch('api/updateSingleBuilding', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ buildingData: buildingDetails }),
-      })
-    }, 100)
+
+    fetch('api/updateSingleBuilding', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ buildingData: buildingDetails }),
+    })
   }, [isEditing])
 
   if (!buildingDetails) {
     return (
-      <div className='flex items-center justify-center h-screen bg-background'>
+      <div className='flex items-center justify-center h-screen'>
         <span className='loading loading-spinner loading-lg'></span>
       </div>
     )
   }
   return (
-    <div className='relative bg-background text-foreground w-full rounded-xl p-6 shadow-lg'>
+    <div className='relative text-foreground w-full rounded-xl p-6 shadow-lg'>
       <BuildingHero buildingDetails={buildingDetails} />
       <div className='flex flex-col px-16 w-full'>
         <EditCheckBox isEditing={isEditing} setIsEditing={setIsEditing} />
