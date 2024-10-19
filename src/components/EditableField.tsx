@@ -10,19 +10,25 @@ export function EditableField({
   isEditing: boolean
 }) {
   return (
-    <div className='flex items-center space-x-2'>
-      <span>{name}</span>
+    <>
+      <div className='col-span-1'>
+        <label className='label'>{name}</label>
+      </div>
       {isEditing ? (
-        <input
-          title='Editable Field'
-          type='text'
-          value={value}
-          className='input input-bordered w-full max-w-xs'
-          onChange={(e) => onChange(e.target.value)}
-        />
+        <div className='col-span-2'>
+          <input
+            title='Editable Field'
+            type='text'
+            value={value}
+            className='input input-bordered w-full max-w-xs'
+            onChange={(e) => onChange(e.target.value)}
+          />
+        </div>
       ) : (
-        <div>{value}</div>
+        <div className='col-span-2'>
+          <label className='label'>{value}</label>
+        </div>
       )}
-    </div>
+    </>
   )
 }

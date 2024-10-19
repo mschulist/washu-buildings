@@ -1,42 +1,50 @@
-import { ColormapProps } from '@/map_utils/colormaps'
+import { ColormapProps, defaultColormapProps } from '@/map_utils/colormaps'
 import { firstLetterUppercase } from './MapLegend'
+import { useEffect, useState } from 'react'
 
-export const filterableProps = [
-  'department',
-  'food',
-  'blackboard',
-  'whiteboard',
-  'printer',
-  'study_rooms',
-]
+const filterableProps = Object.keys(
+  defaultColormapProps,
+) as (keyof ColormapProps)[]
 
 export function MapFilter({
-  colormapProperty,
-  setColormapProperty,
+  colormapProperties,
+  setColormapProperties,
 }: {
-  colormapProperty: string
-  setColormapProperty: (newProperty: ColormapProps) => void
+  colormapProperties: ColormapProps
+  setColormapProperties: (newProperties: ColormapProps) => void
 }) {
+  const [allFilters, setAllFilters] =
+    useState<ColormapProps>(defaultColormapProps)
+
+  function reverseFilter(property: keyof ColormapProps) {
+    const newFilters = { ...allFilters }
+    newFilters[property] = !newFilters[property]
+    setAllFilters(newFilters)
+    setColormapProperties(
+      Object.fromEntries(
+        Object.entries(newFilters).map(([key, value]) => [key, value]),
+      ) as ColormapProps,
+    )
+  }
+
   return (
     <div className='top-3 right-3 fixed z-10'>
-      <ul className='menu bg-base-200 rounded-box w-56'>
+      <ul className='menu bg-base-200 rounded-box w-44'>
         <li>
           <details open>
             <summary>Filter</summary>
             <div className='form-control'>
               {filterableProps.map((prop) => (
                 <label key={prop} className='label cursor-pointer'>
-                  <span className='label-text'>
-                    {firstLetterUppercase(prop)}
-                  </span>
-                  <input
-                    type='radio'
+                  <button
                     name='colormapProperty'
-                    value={prop}
-                    checked={colormapProperty === prop}
-                    className='radio'
-                    onChange={() => setColormapProperty(prop as ColormapProps)}
-                  />
+                    style={{ background: allFilters[prop] ? 'blue' : 'none' }}
+                    className='btn w-full'
+                    onClick={() => reverseFilter(prop)}>
+                    <span className='label-text'>
+                      {firstLetterUppercase(prop)}
+                    </span>
+                  </button>
                 </label>
               ))}
             </div>

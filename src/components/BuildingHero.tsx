@@ -8,7 +8,7 @@ export function BuildingHero({
   buildingDetails: BuildingModel
 }) {
   return (
-    <div className='hero bg-base-300 max-w-[75vw] rounded-3xl m-20'>
+    <div className='hero bg-base-300 max-w-[75vw] rounded-3xl'>
       <div className='text-center hero-content'>
         <div className='max-w-3/6'>
           <h1 className='mb-5 text-5xl font-bold'>{buildingDetails.name}</h1>

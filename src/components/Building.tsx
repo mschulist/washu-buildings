@@ -6,12 +6,13 @@ import { BuildingHero } from './BuildingHero'
 import { BuildingEditable } from './BuildingEditable'
 import { EditCheckBox } from './EditCheckbox'
 import { BackButton } from './BackButton'
+import { CommentDisplay } from './Comments'
 
 export function Building({ id }: { id: string }) {
   const [buildingDetails, setBuildingDetails] = useState<BuildingModel | null>(
     null,
   )
-  const [isEditing, setIsEditing] = useState(false)
+  const [isEditing, setIsEditing] = useState<boolean>(false)
 
   useEffect(() => {
     async function fetchData() {
@@ -37,19 +38,16 @@ export function Building({ id }: { id: string }) {
     )
   }
   return (
-    <div className='flex flex-col items-center min-h-screen bg-base-200 py-10'>
-      <BackButton />
+    <div className='flex flex-col items-center bg-base-200 w-full rounded-xl'>
       <BuildingHero buildingDetails={buildingDetails} />
-      <div className='grid grid-cols-3 gap-4 px-16 w-[90vw]'>
-        <div className='col-span-2 text-center p-8'>
-          <EditCheckBox setIsEditing={setIsEditing} />
-          <BuildingEditable
-            buildingDetails={buildingDetails}
-            isEditing={isEditing}
-          />
-        </div>
-        <div className='col-span-1 p-8'>Comments!</div>
+      <div className='flex flex-col px-16 w-full'>
+        <EditCheckBox isEditing={isEditing} setIsEditing={setIsEditing} />
+        <BuildingEditable
+          buildingDetails={buildingDetails}
+          isEditing={isEditing}
+        />
       </div>
+      <CommentDisplay comments={buildingDetails.comments} />
     </div>
   )
 }

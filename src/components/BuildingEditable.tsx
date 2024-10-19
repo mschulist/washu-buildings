@@ -15,7 +15,7 @@ export function BuildingEditable({
   const [printerInfo, setPrinterInfo] = useState(buildingDetails.printer_info)
 
   return (
-    <div className='flex flex-col items-center justify-center bg-base-200'>
+    <div className='grid grid-cols-3 justify-items-center bg-base-200'>
       <EditableField
         name='Name'
         value={name}

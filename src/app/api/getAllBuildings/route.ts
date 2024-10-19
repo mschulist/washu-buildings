@@ -8,11 +8,10 @@ export async function POST(): Promise<NextResponse> {
     .from(DB_NAME)
     .select(MAP_DISPLAY_COLS.join(','))
   if (error) {
-    console.error(error)
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: error.message, ok: false },
       { status: 500 },
     )
   }
-  return NextResponse.json({ success: true, data })
+  return NextResponse.json({ success: true, data, ok: true })
 }
