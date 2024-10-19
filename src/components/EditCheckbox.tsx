@@ -8,7 +8,6 @@ export function EditCheckBox({
   return (
     <div className='form-control w-10'>
       <label className='label cursor-pointer'>
-        {/* <span className='label-text'>{isEditing ? "Save" : "Edit"}</span> */}
         <button
           onClick={() => setIsEditing(!isEditing)}
           className={

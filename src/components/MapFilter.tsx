@@ -38,8 +38,11 @@ export function MapFilter({
                 <label key={prop} className='label cursor-pointer'>
                   <button
                     name='colormapProperty'
-                    style={{ background: allFilters[prop] ? 'blue' : 'none' }}
-                    className='btn w-full'
+                    // style={{ 
+                    //   background: allFilters[prop] ? '#3beb7c' : 'none' ,
+                    //   color: allFilters[prop] ? 'black !important' : 'white' 
+                    // }}
+                    className={allFilters[prop] ? 'btn btn-outline  btn-accent w-full' : 'btn w-full'}
                     onClick={() => reverseFilter(prop)}>
                     <span className='label-text'>
                       {firstLetterUppercase(prop)}

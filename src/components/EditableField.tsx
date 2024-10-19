@@ -15,14 +15,12 @@ export function EditableField({
         <label className='label'>{name}</label>
       </div>
       {isEditing ? (
-        <div className='col-span-2'>
-          <input
-            title='Editable Field'
-            type='text'
+        <div className='col-span-2 p-1'>
+          <textarea
+            title='editable field'
+            className='textarea textarea-bordered w-full'
             value={value}
-            className='input input-bordered w-full max-w-xs'
-            onChange={(e) => onChange(e.target.value)}
-          />
+            onChange={(e) => onChange(e.target.value)}></textarea>
         </div>
       ) : (
         <div className='col-span-2'>

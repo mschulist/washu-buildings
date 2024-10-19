@@ -7,11 +7,13 @@ export async function POST(): Promise<NextResponse> {
   const { data, error } = await supabase
     .from(DB_NAME)
     .select(MAP_DISPLAY_COLS.join(','))
+
   if (error) {
     return NextResponse.json(
       { success: false, error: error.message, ok: false },
       { status: 500 },
     )
   }
+
   return NextResponse.json({ success: true, data, ok: true })
 }

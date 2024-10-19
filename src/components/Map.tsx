@@ -6,20 +6,16 @@ import DeckGL, {
   PolygonLayer,
   TripsLayer,
 } from 'deck.gl'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Map } from 'react-map-gl/maplibre'
-import { useRouter } from 'next/navigation'
 import { MapLegend } from './MapLegend'
-import StaticMap from 'react-map-gl'
 import {
   ColormapProps,
   CreateColorMap,
   defaultColormapProps,
 } from '@/map_utils/colormaps'
 import { MapFilter } from './MapFilter'
-import { Building } from './Building'
-import { Popup } from 'react-map-gl'
-import { MapProvider } from 'react-map-gl'
+import { PopupModal } from './PopupModal'
 
 export type BlockProperties = {
   height: number
@@ -33,26 +29,38 @@ export type BlockProperties = {
 }
 
 // Source: https://parking.wustl.edu/items/campus-circulator/
-const pickupCenters = [
-  [-90.314975, 38.645516], // Lee house
-  [-90.312681, 38.64527], // Zetcher house
-  [-90.309577, 38.647031], // Mallinckrodt Center
-  [-90.306319, 38.646744], // Goldfrab Hall
-  [-90.30405, 38.64764], // Sumers Welcome Center Pavillion
-  [-90.300861, 38.648853], // Young Archway
-  [-90.311765, 38.650132], // Washington University School of Law Library
-  [-90.313425, 38.650318], // Lot 29
+// const pickupCenters = [
+//   [-90.314975, 38.645516], // Lee house
+//   [-90.312681, 38.64527], // Zetcher house
+//   [-90.309577, 38.647031], // Mallinckrodt Center
+//   [-90.306319, 38.646744], // Goldfrab Hall
+//   [-90.30405, 38.64764], // Sumers Welcome Center Pavillion
+//   [-90.300861, 38.648853], // Young Archway
+//   [-90.311765, 38.650132], // Washington University School of Law Library
+//   [-90.313425, 38.650318], // Lot 29
+// ]
+
+const pickupStations = [
+  ['S-40, Clocktower', [-90.3129323147499, 38.6453046559579]],
+  ['Mallinckrodt Bus Plaza', [-90.3088805661316, 38.6469369100415]],
+  ['Snow Way', [-90.3139231126892, 38.6503492374085]],
+  ['Millbrook Garage', [-90.3117158128975, 38.6501115105297]],
+  ['Skinker & FPP', [-90.300904454631, 38.6488991631577]],
+  ['East End Garage', [-90.3041283846558, 38.6465841895706]],
+  ['Mallinckrodt Bus Plaza', [-90.3088805661316, 38.6469369100415]],
+  ['S-40, Habif Health', [-90.3157644736801, 38.6455761224313]],
+  ['S-40, Clocktower', [-90.3129323147499, 38.6453046559579]],
 ]
 
 function radians(degrees: number) {
   return (degrees * Math.PI) / 180
 }
 
-const pickupPolygons = pickupCenters.map((center) => {
+const pickupPolygons = pickupStations.map(([_, center], __) => {
   const N = 24
   const r = 0.0001
   return Array.from({ length: N }, (_, i) => {
-    let theta = (2.0 * Math.PI * i) / N
+    const theta = (2.0 * Math.PI * i) / N
     return [
       center[0] + r * Math.cos(theta),
       center[1] + r * Math.sin(theta) * Math.cos(radians(center[1])),
@@ -60,7 +68,7 @@ const pickupPolygons = pickupCenters.map((center) => {
   })
 })
 
-const pickUpData = pickupPolygons.map((polygon) => {
+const pickupData = pickupPolygons.map((polygon) => {
   return {
     height: 6.0,
     polygon,
@@ -78,6 +86,9 @@ function distance(a: [number, number], b: [number, number]) {
 }
 
 function makeTrip(path: [number, number][]) {
+  // Avoids a bug (?) in the trips rendering
+  if (path[0] === path[path.length - 1]) path.push(path[-1])
+
   // Total distance from start to this point in the path
   let distances: number[] = []
 
@@ -91,6 +102,7 @@ function makeTrip(path: [number, number][]) {
 
   // Normalized distance from start to this point in the path
   distances = distances.map((x) => x / distances[distances.length - 1])
+  console.log(distances)
 
   return {
     path,
@@ -98,20 +110,41 @@ function makeTrip(path: [number, number][]) {
   }
 }
 
-let trips = [
+const trips = [
   makeTrip([
-    [-90.314975, 38.645516], // Lee house
-    [-90.312681, 38.64527], // Zetcher house
-    [-90.309577, 38.647031], // Mallinckrodt Center
-    [-90.306319, 38.646744], // Goldfrab Hall
-    [-90.30405, 38.64764], // Sumers Welcome Center Pavillion
-    [-90.300861, 38.648853], // Young Archway
-    [-90.311765, 38.650132], // Washington University School of Law Library
-    [-90.313425, 38.650318], // Lot 29
+    [-90.31292789999999, 38.6453327],
+    [-90.3115199, 38.6451929],
+    [-90.31086250000001, 38.6472135],
+    [-90.30888689999999, 38.6469813],
+    [-90.3081059, 38.6469089],
+    [-90.3081502, 38.646658],
+    [-90.3154372, 38.6473597],
+    [-90.3151462, 38.6504833],
+    [-90.31392729999999, 38.6503901],
+    [-90.3117114, 38.6501428],
+    [-90.3116273, 38.6501356],
+    [-90.3114008, 38.65067],
+    [-90.3007167, 38.6492647],
+    [-90.30076989999999, 38.6488866],
+    [-90.3012129, 38.6460183],
+    [-90.3041713, 38.6462752],
+    [-90.3041404, 38.6465043],
+    [-90.3041288, 38.6465842],
+    [-90.3041713, 38.6462752],
+    [-90.3081502, 38.646658],
+    [-90.30803759999999, 38.64733289999999],
+    [-90.308865, 38.6471446],
+    [-90.30888689999999, 38.6469813],
+    [-90.3081059, 38.6469089],
+    [-90.3081502, 38.646658],
+    [-90.3154372, 38.6473597],
+    [-90.3161259, 38.6456412],
+    [-90.31576009999999, 38.6456041],
+    [-90.31292789999999, 38.6453327],
   ]),
 ]
 
-const trailLength = 100
+const trailLength = 0.2
 
 function getTooltip({ object }: PickingInfo) {
   if (!object) {
@@ -120,7 +153,6 @@ function getTooltip({ object }: PickingInfo) {
   return (
     object && {
       html: `\
-        <div><b>Name</b></div>
         <div>${object.name}</div>
     `,
       className: 'rounded-xl',
@@ -128,7 +160,35 @@ function getTooltip({ object }: PickingInfo) {
   )
 }
 
+// From https://css-tricks.com/using-requestanimationframe-with-react-hooks/
+const useAnimationFrame = (callback) => {
+  const requestRef = useRef()
+  const previousTimeRef = useRef()
+
+  const animate = (time) => {
+    if (previousTimeRef.current !== undefined) {
+      const deltaTime = time - previousTimeRef.current
+      callback(deltaTime)
+    }
+    previousTimeRef.current = time
+    requestRef.current = requestAnimationFrame(animate)
+  }
+
+  useEffect(() => {
+    requestRef.current = requestAnimationFrame(animate)
+    return () => cancelAnimationFrame(requestRef.current)
+  }, [])
+}
+
 export function MapBox() {
+  const [currentTime, setCurrentTime] = useState(0)
+
+  useAnimationFrame((deltaTime) => {
+    setCurrentTime((time) => {
+      return (time + 0.001) % 1
+    })
+  })
+
   const [data, setData] = useState<BlockProperties[]>([])
   const [colormap, setColormap] = useState<Record<string, string>>({})
   const [colormapProperty, setColormapProperty] =
@@ -143,13 +203,6 @@ export function MapBox() {
     pitch: 45,
     bearing: 0,
   }
-  fetch(
-    'https://upload.wikimedia.org/wikipedia/commons/3/36/Yahya_al-Sinwar_2011_crop.JPG',
-  )
-    .then((res) => res.blob())
-    .then((blob) => {
-      console.log(blob)
-    })
 
   useEffect(() => {
     async function fetchData() {
@@ -180,7 +233,7 @@ export function MapBox() {
     setData(d)
   }, [colormapProperty])
 
-  const openModal = () => {
+  function openModal() {
     const modal = document.getElementById('modal')
     if (modal) {
       const m = modal as any
@@ -199,12 +252,13 @@ export function MapBox() {
       selectable: true,
       filled: true,
       extruded: true,
-      getElevation: (f: any) => f.height * 2,
+      getElevation: (f) => f.height * 2,
       getPolygon: (f) => f.polygon,
       getLineColor: [255, 255, 255],
       getFillColor: (f) => f.color,
       pickable: true,
       onClick: (pickingInfo) => {
+        if (selectedBuilding != null) return
         openModal()
         if (pickingInfo && pickingInfo.coordinate) {
           setSelectedBuilding(pickingInfo.object.id)
@@ -216,18 +270,19 @@ export function MapBox() {
       data: trips,
       getPath: (d) => d.path,
       getTimestamps: (d) => d.timestamps,
-      getColor: (d) => [255, 100, 50],
+      getColor: [255, 50, 50],
       opacity: 0.3,
-      widthMinPixels: 2,
-      // rounded: true,
+      widthMinPixels: 5,
+      capRounded: true,
+      jointRounded: true,
       trailLength,
-      currentTime: 0.3,
+      currentTime,
 
       shadowEnabled: false,
     }),
     new PolygonLayer({
       id: 'pickups',
-      data: pickUpData,
+      data: pickupData,
       opacity: 0.75,
       stroked: false,
       // selectable: true,
@@ -237,7 +292,7 @@ export function MapBox() {
       getElevation: (f) => f.height,
       getPolygon: (f) => f.polygon,
       getLineColor: [255, 255, 255],
-      getFillColor: (f) => [255, 255, 255],
+      getFillColor: [255, 255, 255],
       // pickable: true,
     }),
   ]
@@ -255,17 +310,10 @@ export function MapBox() {
         controller={selectedBuilding == null}
         getTooltip={getTooltip}>
         <Map reuseMaps mapStyle={mapStyle}>
-          <dialog
-            id='modal'
-            className='modal'
-            onClose={() => setSelectedBuilding(null)}>
-            <div className='modal-box max-w-[75vw]'>
-              {selectedBuilding && <Building id={selectedBuilding} />}
-            </div>
-            <form method='dialog' className='modal-backdrop'>
-              <button />
-            </form>
-          </dialog>
+          <PopupModal
+            selectedBuilding={selectedBuilding}
+            setSelectedBuilding={setSelectedBuilding}
+          />
         </Map>
       </DeckGL>
     </>

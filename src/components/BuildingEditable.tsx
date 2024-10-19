@@ -1,12 +1,14 @@
 import { BuildingModel } from '@/db_utils/constants'
 import { EditableField } from './EditableField'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export function BuildingEditable({
   buildingDetails,
+  setBuildingDetails,
   isEditing,
 }: {
   buildingDetails: BuildingModel
+  setBuildingDetails: (buildingDetails: BuildingModel) => void
   isEditing: boolean
 }) {
   const [name, setName] = useState(buildingDetails.name)
@@ -14,8 +16,20 @@ export function BuildingEditable({
   const [boardInfo, setBoardInfo] = useState(buildingDetails.board_info)
   const [printerInfo, setPrinterInfo] = useState(buildingDetails.printer_info)
 
+  useEffect(() => {
+    if (!isEditing) {
+      setBuildingDetails({
+        ...buildingDetails,
+        name,
+        general_info: generalInfo,
+        board_info: boardInfo,
+        printer_info: printerInfo,
+      })
+    }
+  }, [name, generalInfo, boardInfo, printerInfo])
+
   return (
-    <div className='grid grid-cols-3 justify-items-center bg-base-200'>
+    <div className='grid grid-cols-3 gap-4 bg-base-200'>
       <EditableField
         name='Name'
         value={name}

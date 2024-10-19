@@ -20,7 +20,10 @@ export function BuildingHero({
               height={500}
             />
           )}
-          <p className='mb-5'>{buildingDetails.general_info}</p>
+          {buildingDetails.general_info && (
+            <p className='mb-5'>{buildingDetails.general_info}</p>
+          )}
+
           <div className='flex justify-center'>
             {buildingDetails.website && (
               <Link href={buildingDetails.website} className='btn btn-primary'>

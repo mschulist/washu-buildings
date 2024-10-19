@@ -2,35 +2,60 @@ import React, { useState } from 'react'
 
 export function CommentDisplay({ comments }: { comments: string[] }) {
   const [commentsVisible, setCommentsVisible] = useState(false)
+  const [commentList, setCommentList] = useState(comments)
+  const [newComment, setNewComment] = useState('')
 
   const toggleComments = () => {
     setCommentsVisible(!commentsVisible)
   }
 
+  const handleAddComment = (event: React.FormEvent) => {
+    event.preventDefault()
+    if (newComment.trim()) {
+      setCommentList([...commentList, newComment])
+      setNewComment('')
+    }
+  }
+
   return (
     <>
-      <div className='fixed bottom-1 right-2 p-1 z-10'>
-        <button className='btn btn-circle btn-outline' onClick={toggleComments}>
-          <CommentIcon />
-        </button>
-      </div>
-      <div className='fixed bottom-12 right-4 p-8'>
+      <div className='sticky bottom-1 right-1 z-10'>
+        <div className='absolute bottom-1 right-1 z-10'>
+          <button
+            className='btn btn-circle btn-outline'
+            onClick={toggleComments}>
+            <CommentIcon />
+          </button>
+        </div>
         {commentsVisible && (
-          <div className='comments-list bg-base-200 rounded-box mt-4 bg-slate-600'>
-            <h3 className='font-bold'>Comments:</h3>
-            <div className='fixed bottom-1 right-16 p-1'>
-              <button className='btn btn-circle btn-outline bg-green-700'>
-                <AddCommentButton />
-              </button>
+          <div className='absolute bottom-12 right-4 w-128 bg-base-200 rounded-box shadow-lg'>
+            <div className='p-4'>
+              <h3 className='font-bold'>Comments:</h3>
+              <ul className='max-h-48 overflow-y-auto'>
+                {commentList &&
+                  commentList.map((comment, index) => (
+                    <li key={index} className='comment-item'>
+                      {comment}
+                    </li>
+                  ))}
+              </ul>
+              <form
+                onSubmit={handleAddComment}
+                className='flex items-center mt-2'>
+                <input
+                  type='text'
+                  className='input flex-grow'
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  placeholder='Your Comment...'
+                />
+                <button
+                  type='submit'
+                  className='btn btn-circle btn-outline bg-green-700 ml-2'>
+                  <AddCommentButton />
+                </button>
+              </form>
             </div>
-            <ul>
-              {comments &&
-                comments.map((comment, index) => (
-                  <li key={index} className='comment-item'>
-                    {comment}
-                  </li>
-                ))}
-            </ul>
           </div>
         )}
       </div>

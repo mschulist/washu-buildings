@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react'
 import { BuildingHero } from './BuildingHero'
 import { BuildingEditable } from './BuildingEditable'
 import { EditCheckBox } from './EditCheckbox'
-import { BackButton } from './BackButton'
 import { CommentDisplay } from './Comments'
 
 export function Building({ id }: { id: string }) {
@@ -30,6 +29,18 @@ export function Building({ id }: { id: string }) {
     fetchData()
   }, [id])
 
+  useEffect(() => {
+    if (!buildingDetails) return
+    if (isEditing) return
+    console.log(buildingDetails)
+    fetch('api/updateSingleBuilding', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ buildingData: buildingDetails }),
+    })
+    console.log('Building updated')
+  }, [isEditing])
+
   if (!buildingDetails) {
     return (
       <div className='flex items-center justify-center h-screen bg-base-200'>
@@ -38,12 +49,13 @@ export function Building({ id }: { id: string }) {
     )
   }
   return (
-    <div className='flex flex-col items-center bg-base-200 w-full rounded-xl'>
+    <div className='relative bg-base-200 w-full rounded-xl'>
       <BuildingHero buildingDetails={buildingDetails} />
       <div className='flex flex-col px-16 w-full'>
         <EditCheckBox isEditing={isEditing} setIsEditing={setIsEditing} />
         <BuildingEditable
           buildingDetails={buildingDetails}
+          setBuildingDetails={setBuildingDetails}
           isEditing={isEditing}
         />
       </div>
