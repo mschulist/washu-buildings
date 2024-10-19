@@ -29,6 +29,7 @@ function getTooltip({ object }: PickingInfo) {
         <div><b>Name</b></div>
         <div>${object.name}</div>
     `,
+      className: 'rounded-xl',
     }
   )
 }
