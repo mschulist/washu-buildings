@@ -5,12 +5,18 @@ import { useEffect, useState } from 'react'
 import { Map } from 'react-map-gl/maplibre'
 import { useRouter } from 'next/navigation'
 import { MapLegend } from './MapLegend'
-import { CreateColorMap } from '@/map_utils/colormaps'
+import { ColormapProps, CreateColorMap } from '@/map_utils/colormaps'
+import { MapFilter } from './MapFilter'
 
 export type BlockProperties = {
   height: number
   name: string
   department: string
+  food: number
+  blackboard: number
+  whiteboard: number
+  printer: number
+  study_rooms: number
 }
 
 function getTooltip({ object }: PickingInfo) {
@@ -30,6 +36,8 @@ function getTooltip({ object }: PickingInfo) {
 export function MapBox() {
   const [data, setData] = useState<BlockProperties[]>([])
   const [colormap, setColormap] = useState<Record<string, string>>({})
+  const [filteredProperty, setFilteredProperty] =
+    useState<ColormapProps>('department')
 
   const router = useRouter()
 
@@ -47,12 +55,18 @@ export function MapBox() {
         .then((res) => res.json())
         .then((data) => data.data)) as BlockProperties[]
 
-      const { colormapObj, data } = CreateColorMap(buildings)
+      const { colormapObj, data } = CreateColorMap(buildings, filteredProperty)
       setColormap(colormapObj)
       setData(data)
     }
     fetchData()
   }, [])
+
+  useEffect(() => {
+    const { colormapObj, data: d } = CreateColorMap(data, filteredProperty)
+    setColormap(colormapObj)
+    setData(d)
+  }, [filteredProperty])
 
   const mapStyle =
     'https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json'
@@ -80,7 +94,10 @@ export function MapBox() {
   return (
     <>
       <MapLegend colormap={colormap} />
-      {/* <MapFilter /> */}
+      <MapFilter
+        colormapProperty={filteredProperty}
+        setColormapProperty={setFilteredProperty}
+      />
       <DeckGL
         layers={layers}
         initialViewState={INITIAL_VIEW_STATE}

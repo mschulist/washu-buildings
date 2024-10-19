@@ -1,33 +1,45 @@
 import { BuildingModel } from '@/db_utils/constants'
+import { ColormapProps } from '@/map_utils/colormaps'
+import { firstLetterUppercase } from './MapLegend'
 
-export type MapFilterFuncs = {
-  [key: string]: (building: BuildingModel) => boolean
-}
+export const filterableProps = [
+  'department',
+  'food',
+  'blackboard',
+  'whiteboard',
+  'printer',
+  'study_rooms',
+]
 
-export function MapFilter({ filterFuncs }: { filterFuncs: MapFilterFuncs }) {
-  filterFuncs['test'] = (building) => {
-    return building.name === 'test'
-  }
+export function MapFilter({
+  colormapProperty,
+  setColormapProperty,
+}: {
+  colormapProperty: string
+  setColormapProperty: (newProperty: ColormapProps) => void
+}) {
   return (
     <div className='top-3 right-3 fixed z-10'>
       <ul className='menu bg-base-200 rounded-box w-56'>
         <li>
           <details open>
-            <summary>Features</summary>
+            <summary>Filter</summary>
             <div className='form-control'>
-              <label className='label cursor-pointer'>
-                <span className='label-text'>Filter 1</span>
-                <input type='checkbox' checked={false} className='checkbox' />
-              </label>
-            </div>
-          </details>
-          <details open>
-            <summary>Building Type</summary>
-            <div className='form-control'>
-              <label className='label cursor-pointer'>
-                <span className='label-text'>Filter 1</span>
-                <input type='checkbox' checked={false} className='checkbox' />
-              </label>
+              {filterableProps.map((prop) => (
+                <label key={prop} className='label cursor-pointer'>
+                  <span className='label-text'>
+                    {firstLetterUppercase(prop)}
+                  </span>
+                  <input
+                    type='radio'
+                    name='colormapProperty'
+                    value={prop}
+                    checked={colormapProperty === prop}
+                    className='radio'
+                    onChange={() => setColormapProperty(prop as ColormapProps)}
+                  />
+                </label>
+              ))}
             </div>
           </details>
         </li>
