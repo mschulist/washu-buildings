@@ -11,7 +11,7 @@ export function MapFilter({
   isVisible,
 }: {
   setColormapProperties: (newProperties: ColormapProps) => void
-  isVisible: true
+  isVisible: boolean
 }) {
   const [allFilters, setAllFilters] =
     useState<ColormapProps>(defaultColormapProps)
