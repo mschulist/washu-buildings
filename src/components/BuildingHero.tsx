@@ -22,7 +22,7 @@ export function BuildingHero({
             />
           )}
           {buildingDetails.general_info && (
-            <p className='mb-5'>{buildingDetails.general_info}</p>
+            <p className='mb-5 mt-5'>{buildingDetails.general_info}</p>
           )}
 
           <div className='flex justify-center'>

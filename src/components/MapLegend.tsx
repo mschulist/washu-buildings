@@ -15,19 +15,17 @@ export function MapLegend({ colormap }: { colormap: Record<string, string> }) {
           <details open>
             <summary>Legend</summary>
             <div className='form-control'>
-              {Object.entries(colormap).map(([key, value]) => (
-                <label key={key ?? 'other'} className='label'>
-                  <span>
-                    {key === 'null' ? 'Other' : firstLetterUppercase(key)}
-                  </span>
-                  <svg
-                    width='20'
-                    height='20'
-                    style={{ display: 'inline-block', marginLeft: '8px' }}>
-                    <circle cx='10' cy='10' r='10' fill={value} />
-                  </svg>
-                </label>
-              ))}
+              {Object.entries(colormap).length > 2 &&
+                Object.entries(colormap).map(([key, value]) => (
+                  <label key={key ?? 'other'} className='label'>
+                    <span>
+                      {key === 'null' ? 'Other' : firstLetterUppercase(key)}
+                    </span>
+                    <svg width='20' height='20' className='inline-block ml-2'>
+                      <circle cx='10' cy='10' r='10' fill={value} />
+                    </svg>
+                  </label>
+                ))}
             </div>
           </details>
         </li>

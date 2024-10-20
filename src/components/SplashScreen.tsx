@@ -1,16 +1,28 @@
-import React from 'react'
+import React, { useState } from 'react';
+import { MapFilter } from './MapFilter'; // Adjust the import path as necessary
 
-function onEnter() {}
+function onEnter() {
+  // Handle the enter action here
+}
 
-export function SplashScreen() {
+export function SplashScreen({ setSplashActive }: { setSplashActive: (active: boolean) => void }) {
   return (
     <>
-      <div className='text-center z-10'>
-        <h1 className='text-5xl text-white mb-8'>Welcome</h1>
-        <button className='btn btn-secondary' onClick={onEnter}>
+      {/* Background blur layer */}
+      <div className="fixed top-0 left-0 w-full h-full bg-background bg-opacity-75 backdrop-blur-sm" />
+      {/* Splash screen content */}
+      <div className="fixed top-0 left-0 w-full h-full flex flex-col items-center justify-center">
+        <h1 className="text-4xl font-bold text-foreground">WashU Campus View!</h1>
+        <button
+          className="btn btn-secondary mt-4"
+          onClick={() => {
+            setSplashActive(false); // Set splash screen inactive
+            onEnter();
+          }}
+        >
           Enter
         </button>
       </div>
     </>
-  )
+  );
 }

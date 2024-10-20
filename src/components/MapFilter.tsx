@@ -9,9 +9,11 @@ const filterableProps = Object.keys(
 export function MapFilter({
   colormapProperties,
   setColormapProperties,
+  isVisible
 }: {
   colormapProperties: ColormapProps
   setColormapProperties: (newProperties: ColormapProps) => void
+  isVisible: true
 }) {
   const [allFilters, setAllFilters] =
     useState<ColormapProps>(defaultColormapProps)
@@ -25,6 +27,10 @@ export function MapFilter({
         Object.entries(newFilters).map(([key, value]) => [key, value]),
       ) as ColormapProps,
     )
+  }
+
+  if(!isVisible) {
+    return null
   }
 
   return (

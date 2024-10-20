@@ -51,7 +51,7 @@ export function CommentDisplay({
           </button>
         </div>
         {commentsVisible && (
-          <div className='absolute bottom-14 right-4 w-128 bg-gray-400 rounded-box shadow-lg'>
+          <div className='absolute bottom-14 right-4 w-128 bg-background rounded-box shadow-lg'>
             <div className='p-4'>
               <h3 className='font-bold'>Comments:</h3>
               <ul className='max-h-48 overflow-y-auto'>

@@ -52,12 +52,12 @@ export function Building({ id }: { id: string }) {
     <div className='relative text-foreground w-full rounded-xl p-6 shadow-lg'>
       <BuildingHero buildingDetails={buildingDetails} />
       <div className='flex flex-col px-16 w-full'>
-        <EditCheckBox isEditing={isEditing} setIsEditing={setIsEditing} />
         <BuildingEditable
           buildingDetails={buildingDetails}
           setBuildingDetails={setBuildingDetails}
           isEditing={isEditing}
         />
+        <EditCheckBox isEditing={isEditing} setIsEditing={setIsEditing} />
       </div>
       <CommentDisplay
         comments={buildingDetails.comments}

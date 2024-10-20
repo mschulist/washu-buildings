@@ -26,7 +26,10 @@ export type BuildingModel = {
   general_info: string
   image_src: string
   website: string
-  board_info: string
+  whiteboard_info: string
+  blackboard_info: string
+  study_rooms_info: string
+  food_info: string
   printer_info: string
   department: string
   comments: string[]
