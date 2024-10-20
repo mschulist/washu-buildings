@@ -25,6 +25,10 @@ export function BuildingHero({
             <p className='mb-5 mt-5'>{buildingDetails.general_info}</p>
           )}
 
+          {buildingDetails.last_class && (
+            <p className='mb-5 mt-5'>{`The last class scheduled in this building ends at ${buildingDetails.last_class}M.`}</p>
+          )}
+
           <div className='flex justify-center'>
             {buildingDetails.website && (
               <Link href={buildingDetails.website} className='btn btn-primary'>

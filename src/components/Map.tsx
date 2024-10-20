@@ -20,9 +20,13 @@ import {
   CreateColorMap,
   defaultColormapProps,
 } from '@/map_utils/colormaps'
-import { pickupData, trips, trailLength } from '@/map_utils/trail'
+import {
+  pickupData,
+  trips,
+  trailLength,
+  trailIncrement,
+} from '@/map_utils/trail'
 import { createClient } from '@/db_utils/createClientClient'
-import type { User } from '@supabase/supabase-js'
 import { LoginButton } from './Login'
 
 export type BlockProperties = {
@@ -34,6 +38,7 @@ export type BlockProperties = {
   whiteboard: number
   printer: number
   study_rooms: number
+  last_class: number
 }
 
 function getTooltip({ object }: PickingInfo) {
@@ -76,13 +81,13 @@ const useAnimationFrame = (callback: (deltaTime: number) => void) => {
   }, [])
 }
 
-function updateSplashRotation() {
-  const splash = document.getElementById('splash')
+export function updateSplashRotation() {
+  const splash = document.getElementById('splash-rotation')
   if (splash) {
-    const splashRotation = document.getElementById('splash-rotation')
-    if (splashRotation) {
-      splashRotation.style.transform = `rotate(${splashRotation.style.transform})`
-    }
+    const currentRotation =
+      splash.style.transform.replace(/[^0-9.]/g, '') || '0'
+    const newRotation = (parseFloat(currentRotation) + 90) % 360
+    splash.style.transform = `rotate(${newRotation}deg)`
   }
 }
 
@@ -91,7 +96,7 @@ export function MapBox() {
 
   useAnimationFrame(() => {
     setCurrentTime((time) => {
-      return (time + 0.001) % 1
+      return (time + trailIncrement) % 1
     })
     updateSplashRotation()
   })
@@ -103,9 +108,7 @@ export function MapBox() {
 
   const [selectedBuilding, setSelectedBuilding] = useState<string | null>(null)
 
-  const [splashActive, setSplashActive] = useState(true)
-
-  const [user, setUser] = useState<User>()
+  const [validUser, setValidUser] = useState<boolean>(false)
 
   const INITIAL_VIEW_STATE: MapViewState = {
     latitude: 38.648228271786266,
@@ -114,7 +117,6 @@ export function MapBox() {
     pitch: 45,
     bearing: 0,
   }
-  const [viewState, setViewState] = useState<MapViewState>(INITIAL_VIEW_STATE)
   const boundSize = 0.02
 
   function createGradientTexture() {
@@ -147,7 +149,6 @@ export function MapBox() {
       })
         .then(async (res) => {
           const json = await res.json()
-          console.log(json)
           if (!res.ok) {
             throw new Error(`Error! ${json.error}`)
           }
@@ -264,22 +265,13 @@ export function MapBox() {
   useEffect(() => {
     async function fetchUser() {
       const supabase = createClient()
-      const { data, error } = await supabase.auth.getUser()
-      if (!error && data.user) {
-        setUser(data.user)
+      const { error } = await supabase.auth.getUser()
+      if (!error) {
+        setValidUser(true)
       }
     }
     fetchUser()
   }, [])
-
-  const supabase = createClient()
-
-  supabase.auth.onAuthStateChange(async () => {
-    const { data } = await supabase.auth.getUser()
-    if (data.user) {
-      setUser(data.user)
-    }
-  })
 
   const [isVisible, setIsVisible] = useState(true)
   function onEnter() {
@@ -288,7 +280,7 @@ export function MapBox() {
 
   return (
     <div className='map-container'>
-      <LoginButton isVisible={!user && !isVisible} />
+      <LoginButton isVisible={!validUser && !isVisible} />
       <MapLegend colormap={colormap} isVisible={!isVisible} />
       <MapFilter
         setColormapProperties={setColormapProperty}
@@ -299,13 +291,14 @@ export function MapBox() {
         initialViewState={INITIAL_VIEW_STATE}
         controller={selectedBuilding == null}
         getTooltip={getTooltip}
-        onViewStateChange={({ viewState }) =>
-          applyViewStateConstraints(viewState)
-        }>
+        onViewStateChange={({ viewState }) => {
+          applyViewStateConstraints(viewState as MapViewState)
+        }}>
         <Map reuseMaps mapStyle={mapStyle}>
           <PopupModal
             selectedBuilding={selectedBuilding}
             setSelectedBuilding={setSelectedBuilding}
+            validUser={validUser}
           />
         </Map>
       </DeckGL>

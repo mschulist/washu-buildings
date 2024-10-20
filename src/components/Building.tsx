@@ -7,11 +7,21 @@ import { BuildingEditable } from './BuildingEditable'
 import { EditCheckBox } from './EditCheckbox'
 import { CommentDisplay } from './Comments'
 
-export function Building({ id }: { id: string }) {
+export function Building({
+  id,
+  validUser,
+}: {
+  id: string
+  validUser: boolean
+}) {
   const [buildingDetails, setBuildingDetails] = useState<BuildingModel | null>(
     null,
   )
   const [isEditing, setIsEditing] = useState<boolean>(false)
+
+  function setIsEditingWithValidUser(b: boolean) {
+    if (validUser) setIsEditing(b)
+  }
 
   useEffect(() => {
     async function fetchData() {
@@ -48,6 +58,7 @@ export function Building({ id }: { id: string }) {
       </div>
     )
   }
+
   return (
     <div className='relative text-foreground w-full rounded-xl p-6 shadow-lg'>
       <BuildingHero buildingDetails={buildingDetails} />
@@ -57,7 +68,11 @@ export function Building({ id }: { id: string }) {
           setBuildingDetails={setBuildingDetails}
           isEditing={isEditing}
         />
-        <EditCheckBox isEditing={isEditing} setIsEditing={setIsEditing} />
+        <EditCheckBox
+          isEditing={isEditing}
+          setIsEditing={setIsEditingWithValidUser}
+          validUser={validUser}
+        />
       </div>
       <CommentDisplay
         comments={buildingDetails.comments}

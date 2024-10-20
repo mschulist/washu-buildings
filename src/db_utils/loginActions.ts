@@ -1,8 +1,5 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
-
 import { createClient } from '@/db_utils/createServerClient'
 
 export async function signInWithEmail(formData: FormData): Promise<boolean> {
@@ -16,7 +13,7 @@ export async function signInWithEmail(formData: FormData): Promise<boolean> {
     return false
   }
 
-  const { data, error } = await supabase.auth.signInWithOtp({
+  const { error } = await supabase.auth.signInWithOtp({
     email: form.email,
     options: {
       shouldCreateUser: true,
