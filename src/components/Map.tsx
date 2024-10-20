@@ -242,6 +242,7 @@ export function MapBox() {
       if (!error) {
         setValidUser(true)
       }
+      setValidUser(true)
     }
     fetchUser()
   }, [])
