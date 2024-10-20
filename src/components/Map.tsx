@@ -12,13 +12,22 @@ import { Map } from 'react-map-gl/maplibre'
 import { MapLegend } from './MapLegend'
 import { MapFilter } from './MapFilter'
 import { PopupModal } from './PopupModal'
+import { BitmapLayer } from '@deck.gl/layers'
+import { SplashScreen } from './SplashScreen'
 
 import {
   ColormapProps,
   CreateColorMap,
   defaultColormapProps,
 } from '@/map_utils/colormaps'
-import { pickupData, trips, trailLength } from '@/map_utils/trail'
+import {
+  pickupData,
+  trips,
+  trailLength,
+  trailIncrement,
+} from '@/map_utils/trail'
+import { createClient } from '@/db_utils/createClientClient'
+import { LoginButton } from './Login'
 
 export type BlockProperties = {
   height: number
@@ -29,23 +38,8 @@ export type BlockProperties = {
   whiteboard: number
   printer: number
   study_rooms: number
+  last_class: number
 }
-
-// type Theme = {
-//   buildingColor: Color;
-//   trailColor0: Color;
-//   trailColor1: Color;
-//   material: Material;
-// };
-
-// const DEFAULT_THEME: Theme = {
-//   material: {
-//     ambient: 0.1,
-//     diffuse: 0.6,
-//     shininess: 32,
-//     specularColor: [60, 64, 70]
-//   }
-// };
 
 function getTooltip({ object }: PickingInfo) {
   if (!object) {
@@ -92,7 +86,7 @@ export function MapBox() {
 
   useAnimationFrame(() => {
     setCurrentTime((time) => {
-      return (time + 0.001) % 1
+      return (time + trailIncrement) % 1
     })
   })
 
@@ -103,6 +97,8 @@ export function MapBox() {
 
   const [selectedBuilding, setSelectedBuilding] = useState<string | null>(null)
 
+  const [validUser, setValidUser] = useState<boolean>(false)
+
   const INITIAL_VIEW_STATE: MapViewState = {
     latitude: 38.648228271786266,
     longitude: -90.30847514088006,
@@ -110,6 +106,13 @@ export function MapBox() {
     pitch: 45,
     bearing: 0,
   }
+  const boundSize = 0.02
+
+  const gradientLayer = new BitmapLayer({
+    id: 'gradient-layer',
+    bounds: [-90.4, 38.595, -90.215, 38.7],
+    opacity: 1,
+  })
 
   useEffect(() => {
     async function fetchData() {
@@ -119,7 +122,6 @@ export function MapBox() {
       })
         .then(async (res) => {
           const json = await res.json()
-          console.log(json)
           if (!res.ok) {
             throw new Error(`Error! ${json.error}`)
           }
@@ -149,6 +151,7 @@ export function MapBox() {
   }
 
   const layers = [
+    gradientLayer,
     new PolygonLayer({
       id: 'buildings',
       data,
@@ -175,7 +178,7 @@ export function MapBox() {
       data: trips,
       getPath: (d) => d.path,
       getTimestamps: (d) => d.timestamps,
-      getColor: [255, 50, 50],
+      getColor: [255, 125, 89],
       opacity: 0.3,
       widthMinPixels: 4,
       capRounded: true,
@@ -203,25 +206,76 @@ export function MapBox() {
   ]
 
   const mapStyle =
-    'https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json'
+    'https://gist.githubusercontent.com/audrey-chiang/0156564d28077ac528bf0e3d46a939af/raw/5d111157d82751a59c9b4b52cbd6cda585c94276/custom_dark_matter_without_labels.json'
+
+  const bounds: [[west: number, south: number], [east: number, north: number]] =
+    [
+      [
+        INITIAL_VIEW_STATE.longitude - boundSize,
+        INITIAL_VIEW_STATE.latitude - boundSize,
+      ],
+      [
+        INITIAL_VIEW_STATE.longitude + boundSize,
+        INITIAL_VIEW_STATE.latitude + boundSize,
+      ],
+    ]
+
+  function applyViewStateConstraints(viewState: MapViewState): MapViewState {
+    return {
+      ...viewState,
+      zoom: Math.min(20, Math.max(14, viewState.zoom)),
+      longitude: Math.min(
+        bounds[1][0],
+        Math.max(bounds[0][0], viewState.longitude),
+      ),
+      latitude: Math.min(
+        bounds[1][1],
+        Math.max(bounds[0][1], viewState.latitude),
+      ),
+    }
+  }
+
+  useEffect(() => {
+    async function fetchUser() {
+      const supabase = createClient()
+      const { error } = await supabase.auth.getUser()
+      if (!error) {
+        setValidUser(true)
+      }
+    }
+    fetchUser()
+  }, [])
+
+  const [isVisible, setIsVisible] = useState(true)
+  function onEnter() {
+    setIsVisible(false)
+  }
 
   return (
     <div className='map-container'>
-      <MapLegend colormap={colormap} />
-      <MapFilter setColormapProperties={setColormapProperty} isVisible={true} />
+      <LoginButton isVisible={!validUser && !isVisible} />
+      <MapLegend colormap={colormap} isVisible={!isVisible} />
+      <MapFilter
+        setColormapProperties={setColormapProperty}
+        isVisible={!isVisible}
+      />
       <DeckGL
         layers={layers}
         initialViewState={INITIAL_VIEW_STATE}
         controller={selectedBuilding == null}
-        getTooltip={getTooltip}>
+        getTooltip={getTooltip}
+        onViewStateChange={({ viewState }) => {
+          applyViewStateConstraints(viewState as MapViewState)
+        }}>
         <Map reuseMaps mapStyle={mapStyle}>
           <PopupModal
             selectedBuilding={selectedBuilding}
             setSelectedBuilding={setSelectedBuilding}
+            validUser={validUser}
           />
         </Map>
       </DeckGL>
-      {/* <SplashScreen /> */}
+      <SplashScreen onEnter={onEnter} isVisible={isVisible} />
     </div>
   )
 }

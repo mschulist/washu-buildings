@@ -8,6 +8,7 @@ export type ColormapProps = {
   whiteboard: boolean
   printer: boolean
   study_rooms: boolean
+  last_class: boolean
 }
 
 export const defaultColormapProps: ColormapProps = {
@@ -16,13 +17,7 @@ export const defaultColormapProps: ColormapProps = {
   whiteboard: false,
   printer: false,
   study_rooms: false,
-}
-
-function numericToBool(value: number) {
-  if (value === 0 || value === null) {
-    return false
-  }
-  return true
+  last_class: false,
 }
 
 const binaryColormap = {
@@ -90,7 +85,11 @@ export function CreateColorMap(
 
   const data = buildings.map((d) => {
     const shouldBeLit = wantedProps.every((prop) => {
-      return numericToBool(d[prop])
+      const value = d[prop]
+      if (value === 0 || value === null) {
+        return false
+      }
+      return true
     })
 
     const [r, g, b] = shouldBeLit

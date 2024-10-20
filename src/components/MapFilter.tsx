@@ -11,10 +11,14 @@ export function MapFilter({
   isVisible,
 }: {
   setColormapProperties: (newProperties: ColormapProps) => void
-  isVisible: true
+  isVisible: boolean
 }) {
   const [allFilters, setAllFilters] =
     useState<ColormapProps>(defaultColormapProps)
+
+  if (!isVisible) {
+    return null
+  }
 
   function reverseFilter(property: keyof ColormapProps) {
     const newFilters = { ...allFilters }
@@ -25,10 +29,6 @@ export function MapFilter({
         Object.entries(newFilters).map(([key, value]) => [key, value]),
       ) as ColormapProps,
     )
-  }
-
-  if (!isVisible) {
-    return null
   }
 
   return (
@@ -53,7 +53,9 @@ export function MapFilter({
                     }
                     onClick={() => reverseFilter(prop)}>
                     <span className='label-text'>
-                      {firstLetterUppercase(prop)}
+                      {prop === 'last_class'
+                        ? 'Has Classes'
+                        : firstLetterUppercase(prop)}
                     </span>
                   </button>
                 </label>

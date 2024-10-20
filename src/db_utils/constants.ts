@@ -11,6 +11,7 @@ export const MAP_DISPLAY_COLS = [
   'food',
   'study_rooms',
   'department',
+  'last_class',
 ]
 
 export type BuildingModel = {
@@ -32,5 +33,6 @@ export type BuildingModel = {
   food_info: string
   printer_info: string
   department: string
+  last_class: string
   comments: string[]
 }

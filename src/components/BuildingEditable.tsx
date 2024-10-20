@@ -91,6 +91,7 @@ export function BuildingEditable({
     setFoodInfo(s)
     setBuildingDetails({ ...buildingDetails, food_info: s })
   }
+
   return (
     <div className='grid grid-cols-4 gap-4 p-4 rounded-2xl shadow-lg text-foreground'>
       <EditableField

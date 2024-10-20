@@ -1,5 +1,5 @@
 import { DB_NAME } from '@/db_utils/constants'
-import { createClient } from '@/db_utils/create_client'
+import { createClient } from '@/db_utils/createServerClient'
 import { NextResponse } from 'next/server'
 
 export async function POST(req: Request): Promise<NextResponse> {
