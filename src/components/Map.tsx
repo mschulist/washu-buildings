@@ -81,16 +81,6 @@ const useAnimationFrame = (callback: (deltaTime: number) => void) => {
   }, [])
 }
 
-export function updateSplashRotation() {
-  const splash = document.getElementById('splash-rotation')
-  if (splash) {
-    const currentRotation =
-      splash.style.transform.replace(/[^0-9.]/g, '') || '0'
-    const newRotation = (parseFloat(currentRotation) + 90) % 360
-    splash.style.transform = `rotate(${newRotation}deg)`
-  }
-}
-
 export function MapBox() {
   const [currentTime, setCurrentTime] = useState(0)
 
@@ -98,7 +88,6 @@ export function MapBox() {
     setCurrentTime((time) => {
       return (time + trailIncrement) % 1
     })
-    updateSplashRotation()
   })
 
   const [data, setData] = useState<BlockProperties[]>([])
@@ -119,25 +108,9 @@ export function MapBox() {
   }
   const boundSize = 0.02
 
-  function createGradientTexture() {
-    const canvas = document.createElement('canvas')
-    canvas.width = 512
-    canvas.height = 512
-    const ctx = canvas.getContext('2d')
-    if (ctx) {
-      const gradient = ctx.createRadialGradient(256, 256, 0, 256, 256, 256)
-      gradient.addColorStop(0.002, 'rgba(17, 19, 23, 0)')
-      gradient.addColorStop(0.2, 'rgba(17, 19, 23, .9)')
-      ctx.fillStyle = gradient
-      ctx.fillRect(0, 0, 512, 512)
-    }
-    return canvas
-  }
-
   const gradientLayer = new BitmapLayer({
     id: 'gradient-layer',
     bounds: [-90.4, 38.595, -90.215, 38.7],
-    image: createGradientTexture(),
     opacity: 1,
   })
 

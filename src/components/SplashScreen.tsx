@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react'
-import { updateSplashRotation } from './Map' // Import the function
+import React from 'react'
 import { useState } from 'react'
 
 export function SplashScreen({
@@ -11,12 +10,6 @@ export function SplashScreen({
 }) {
   const [fadeOut, setFadeOut] = useState(false)
   const [isHidden, setIsHidden] = useState(false)
-
-  useEffect(() => {
-    if (isVisible) {
-      updateSplashRotation() // Rotate the splash screen when it becomes visible
-    }
-  }, [isVisible])
 
   const handleEnter = () => {
     // Start fade out effect
