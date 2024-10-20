@@ -10,7 +10,7 @@ export function BuildingHero({
   return (
     <div className='hero max-w-[75vw] rounded-3xl text-foreground'>
       <div className='text-center hero-content'>
-        <div className='max-w-3/6'>
+        <div className='max-w-3/6 flex flex-col justify-center items-center'>
           <h1 className='mb-5 text-5xl font-bold'>{buildingDetails.name}</h1>
           {buildingDetails.image_src && (
             <Image
