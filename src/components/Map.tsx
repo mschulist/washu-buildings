@@ -7,13 +7,11 @@ import DeckGL, {
   TripsLayer,
 } from 'deck.gl'
 
-import { useEffect, useState, useRef, MutableRefObject } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Map } from 'react-map-gl/maplibre'
 import { MapLegend } from './MapLegend'
 import { MapFilter } from './MapFilter'
 import { PopupModal } from './PopupModal'
-import { SplashScreen } from './SplashScreen'
-// import type {Position, Color, Material} from '@deck.gl/core';
 
 import {
   ColormapProps,
@@ -39,7 +37,6 @@ export type BlockProperties = {
 //   trailColor1: Color;
 //   material: Material;
 // };
-
 
 // const DEFAULT_THEME: Theme = {
 //   material: {
@@ -67,12 +64,12 @@ function getTooltip({ object }: PickingInfo) {
 // From https://css-tricks.com/using-requestanimationframe-with-react-hooks/
 // We use this to animate a value, in this case `currentTime`, once a frame.
 // Animation of the time allows for the shuttle rendering lines to move
-const useAnimationFrame = (callback: FrameRequestCallback) => {
-  const requestRef: any = useRef()
-  const previousTimeRef: any = useRef()
+const useAnimationFrame = (callback: (deltaTime: number) => void) => {
+  const requestRef = useRef<number | null>(null)
+  const previousTimeRef = useRef<number | null>(null)
 
   const animate = (time: number) => {
-    if (previousTimeRef.current !== undefined) {
+    if (previousTimeRef.current !== null) {
       const deltaTime = time - previousTimeRef.current
       callback(deltaTime)
     }
@@ -82,14 +79,18 @@ const useAnimationFrame = (callback: FrameRequestCallback) => {
 
   useEffect(() => {
     requestRef.current = requestAnimationFrame(animate)
-    return () => cancelAnimationFrame(requestRef.current)
+    return () => {
+      if (requestRef.current !== null) {
+        cancelAnimationFrame(requestRef.current)
+      }
+    }
   }, [])
 }
 
 export function MapBox() {
   const [currentTime, setCurrentTime] = useState(0)
 
-  useAnimationFrame((deltaTime) => {
+  useAnimationFrame(() => {
     setCurrentTime((time) => {
       return (time + 0.001) % 1
     })
@@ -142,7 +143,7 @@ export function MapBox() {
   function openModal() {
     const modal = document.getElementById('modal')
     if (modal) {
-      const m = modal as any
+      const m = modal as HTMLDialogElement
       m.showModal()
     }
   }
@@ -207,17 +208,13 @@ export function MapBox() {
   return (
     <div className='map-container'>
       <MapLegend colormap={colormap} />
-      <MapFilter
-        colormapProperties={colormapProperty}
-        setColormapProperties={setColormapProperty}
-        isVisible={true}
-      />
+      <MapFilter setColormapProperties={setColormapProperty} isVisible={true} />
       <DeckGL
         layers={layers}
         initialViewState={INITIAL_VIEW_STATE}
         controller={selectedBuilding == null}
         getTooltip={getTooltip}>
-        <Map reuseMaps mapStyle={mapStyle} >
+        <Map reuseMaps mapStyle={mapStyle}>
           <PopupModal
             selectedBuilding={selectedBuilding}
             setSelectedBuilding={setSelectedBuilding}

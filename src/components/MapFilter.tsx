@@ -1,17 +1,15 @@
 import { ColormapProps, defaultColormapProps } from '@/map_utils/colormaps'
 import { firstLetterUppercase } from './MapLegend'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 const filterableProps = Object.keys(
   defaultColormapProps,
 ) as (keyof ColormapProps)[]
 
 export function MapFilter({
-  colormapProperties,
   setColormapProperties,
-  isVisible
+  isVisible,
 }: {
-  colormapProperties: ColormapProps
   setColormapProperties: (newProperties: ColormapProps) => void
   isVisible: true
 }) {
@@ -29,7 +27,7 @@ export function MapFilter({
     )
   }
 
-  if(!isVisible) {
+  if (!isVisible) {
     return null
   }
 

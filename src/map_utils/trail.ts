@@ -4,9 +4,9 @@ function radians(degrees: number) {
   return (degrees * Math.PI) / 180
 }
 
-function interp(a: LatLong, b: LatLong, t: number): LatLong {
-  return [(1 - t) * a[0] + t * b[0], (1 - t) * a[1] + t * b[1]]
-}
+// function interp(a: LatLong, b: LatLong, t: number): LatLong {
+//   return [(1 - t) * a[0] + t * b[0], (1 - t) * a[1] + t * b[1]]
+// }
 
 // The (small-distance approximation) distance between two coordinates, accounting for the spherical earth
 function distance(a: LatLong, b: LatLong) {
@@ -59,7 +59,7 @@ const pickupStations = [
   },
 ]
 
-export const pickupData = pickupStations.map((pickup, _) => {
+export const pickupData = pickupStations.map((pickup) => {
   const N = 24
   const r = 0.0001
   const loc = pickup.loc
@@ -150,7 +150,7 @@ const trip = makeTrip([
 ])
 
 // const trips = Array.from({length: 10}, (_, i) => offsetTrip(trip, i / 10))
-export const trips = Array.from({ length: 10 }, (_, i) =>
+export const trips = Array.from({ length: 10 }, () =>
   offsetTrip(trip, Math.random()),
 )
 

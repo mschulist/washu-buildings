@@ -1,6 +1,5 @@
 import { BlockProperties } from '@/components/Map'
 import { scaleOrdinal } from 'd3-scale'
-import { schemeCategory10 } from 'd3-scale-chromatic'
 import hexRgb from 'hex-rgb'
 
 export type ColormapProps = {

@@ -34,6 +34,12 @@ export function CommentDisplay({
   const handleAddComment = (event: React.FormEvent) => {
     event.preventDefault()
     if (newComment.trim()) {
+      if (!commentList) {
+        setCommentList([newComment])
+        setNewComment('')
+        addCommentToDB([newComment])
+        return
+      }
       setCommentList([...commentList, newComment])
       setNewComment('')
       addCommentToDB([...commentList, newComment])
