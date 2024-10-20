@@ -1,52 +1,60 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react'
 
 export function firstLetterUppercase(str: string) {
-  const words = str.split(/[\s-_]+/);
+  const words = str.split(/[\s-_]+/)
   return words
     .map((word) => {
-      return word.charAt(0).toUpperCase() + word.slice(1);
+      return word.charAt(0).toUpperCase() + word.slice(1)
     })
-    .join(' ');
+    .join(' ')
 }
 
-export function MapLegend({ colormap, isVisible }: { colormap: Record<string, string>, isVisible: boolean }) {
-  const resizableRef = useRef<HTMLDivElement>(null);
+export function MapLegend({
+  colormap,
+  isVisible,
+}: {
+  colormap: Record<string, string>
+  isVisible: boolean
+}) {
+  const resizableRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const resizable = resizableRef.current;
-    if (!resizable) return;
+    const resizable = resizableRef.current
+    if (!resizable) return
 
     const onMouseMove = (e: MouseEvent) => {
-      const width = e.clientX - resizable.offsetLeft;
-      const height = e.clientY - resizable.offsetTop;
-      resizable.style.width = `${width}px`;
-      resizable.style.height = `${height}px`;
-    };
+      const width = e.clientX - resizable.offsetLeft
+      const height = e.clientY - resizable.offsetTop
+      resizable.style.width = `${width}px`
+      resizable.style.height = `${height}px`
+    }
 
     const onMouseUp = () => {
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
-    };
+      document.removeEventListener('mousemove', onMouseMove)
+      document.removeEventListener('mouseup', onMouseUp)
+    }
 
     const onMouseDown = () => {
-      document.addEventListener('mousemove', onMouseMove);
-      document.addEventListener('mouseup', onMouseUp);
-    };
+      document.addEventListener('mousemove', onMouseMove)
+      document.addEventListener('mouseup', onMouseUp)
+    }
 
-    const resizer = resizable.querySelector('.resizer');
-    resizer?.addEventListener('mousedown', onMouseDown);
+    const resizer = resizable.querySelector('.resizer')
+    resizer?.addEventListener('mousedown', onMouseDown)
 
     return () => {
-      resizer?.removeEventListener('mousedown', onMouseDown);
-    };
-  }, []);
+      resizer?.removeEventListener('mousedown', onMouseDown)
+    }
+  }, [])
 
   if (!isVisible) {
     return null
   }
 
   return (
-    <div ref={resizableRef} className='relative w-64 h-64 border border-gray-300 overflow-hidden'>
+    <div
+      ref={resizableRef}
+      className='relative w-64 h-64 border border-gray-300 overflow-hidden'>
       <div className='z-10 left-3 fixed top-3 overflow-hidden'>
         <ul className='menu bg-base-200 rounded-box w-44 max-h-72 overflow-y-auto'>
           <li>
@@ -69,7 +77,9 @@ export function MapLegend({ colormap, isVisible }: { colormap: Record<string, st
           </li>
         </ul>
       </div>
-      <div className='resizer w-4 h-4 bg-gray-300 absolute right-0 bottom-0 cursor-se-resize' style={{ clipPath: 'polygon(100% 0, 0 100%, 100% 100%)' }}></div>
+      <div
+        className='resizer w-4 h-4 bg-gray-300 absolute right-0 bottom-0 cursor-se-resize'
+        style={{ clipPath: 'polygon(100% 0, 0 100%, 100% 100%)' }}></div>
     </div>
-  );
+  )
 }

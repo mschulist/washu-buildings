@@ -1,21 +1,23 @@
 import React from 'react'
 import { MapFilter } from './MapFilter'
 import { MapLegend } from './MapLegend'
-
-
-function onEnter() {
-  // Handle the enter action here
-  setVisible(true)
-}
+import { Map } from './Map'
+import { useState } from 'react'
 
 export function SplashScreen({
-  
+  onEnter,
+  isVisible,
 }: {
-  setSplashActive: (active: boolean) => void
+  onEnter: () => void
+  isVisible: boolean
 }) {
+  if (!isVisible) {
+    return null
+  }
+
   return (
     <>
-    {splashActive && <SplashScreen setSplashActive={setSplashActive} />}
+      {/* {splashActive && <SplashScreen setSplashActive={setSplashActive} />} */}
       {/* Background blur layer */}
       <div className='fixed top-0 left-0 w-full h-full bg-opacity-75 backdrop-blur-sm' />
       {/* Splash screen content */}
@@ -26,7 +28,7 @@ export function SplashScreen({
         <button
           className='btn btn-secondary mt-4'
           onClick={() => {
-            setSplashActive(false) // Set splash screen inactive
+            // setSplashActive(false) // Set splash screen inactive
             onEnter()
           }}>
           Enter

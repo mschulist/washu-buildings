@@ -7,8 +7,9 @@ export function LoginPage() {
   const [errorMessage, setErrorMessage] = useState(' ')
 
   const validateEmail = (email: string) => {
-    const wustlEmailRegex = /^[a-zA-Z0-9._%+-]+@wustl\.edu$/
-    return wustlEmailRegex.test(email)
+    // const wustlEmailRegex = /^[a-zA-Z0-9._%+-]+@wustl\.edu$/
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    return emailRegex.test(email)
   }
 
   const handleEmailChange = (e: { target: { value: string } }) => {
@@ -59,7 +60,10 @@ export function LoginPage() {
   )
 }
 
-export function LoginButton() {
+export function LoginButton({ isVisible }: { isVisible: boolean }) {
+  if (!isVisible) {
+    return null
+  }
   return (
     <div className='absolute top-4 right-52 z-10'>
       <button

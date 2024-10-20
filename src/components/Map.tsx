@@ -76,6 +76,16 @@ const useAnimationFrame = (callback: (deltaTime: number) => void) => {
   }, [])
 }
 
+function updateSplashRotation() {
+  const splash = document.getElementById('splash')
+  if (splash) {
+    const splashRotation = document.getElementById('splash-rotation')
+    if (splashRotation) {
+      splashRotation.style.transform = `rotate(${splashRotation.style.transform})`
+    }
+  }
+}
+
 export function MapBox() {
   const [currentTime, setCurrentTime] = useState(0)
 
@@ -83,6 +93,7 @@ export function MapBox() {
     setCurrentTime((time) => {
       return (time + 0.001) % 1
     })
+    updateSplashRotation()
   })
 
   const [data, setData] = useState<BlockProperties[]>([])
@@ -93,7 +104,6 @@ export function MapBox() {
   const [selectedBuilding, setSelectedBuilding] = useState<string | null>(null)
 
   const [splashActive, setSplashActive] = useState(true)
-  
 
   const [user, setUser] = useState<User>()
 
@@ -224,21 +234,31 @@ export function MapBox() {
   const mapStyle =
     'https://gist.githubusercontent.com/audrey-chiang/0156564d28077ac528bf0e3d46a939af/raw/5d111157d82751a59c9b4b52cbd6cda585c94276/custom_dark_matter_without_labels.json'
 
-  const bounds: [
-    [west: number, south: number],
-    [east: number, north: number]
-  ] = [
-    [INITIAL_VIEW_STATE.longitude - boundSize, INITIAL_VIEW_STATE.latitude - boundSize],
-    [INITIAL_VIEW_STATE.longitude + boundSize, INITIAL_VIEW_STATE.latitude + boundSize]
-  ];
-  
+  const bounds: [[west: number, south: number], [east: number, north: number]] =
+    [
+      [
+        INITIAL_VIEW_STATE.longitude - boundSize,
+        INITIAL_VIEW_STATE.latitude - boundSize,
+      ],
+      [
+        INITIAL_VIEW_STATE.longitude + boundSize,
+        INITIAL_VIEW_STATE.latitude + boundSize,
+      ],
+    ]
+
   function applyViewStateConstraints(viewState: MapViewState): MapViewState {
     return {
       ...viewState,
       zoom: Math.min(20, Math.max(14, viewState.zoom)),
-      longitude: Math.min(bounds[1][0], Math.max(bounds[0][0], viewState.longitude)),
-      latitude: Math.min(bounds[1][1], Math.max(bounds[0][1], viewState.latitude))
-    };
+      longitude: Math.min(
+        bounds[1][0],
+        Math.max(bounds[0][0], viewState.longitude),
+      ),
+      latitude: Math.min(
+        bounds[1][1],
+        Math.max(bounds[0][1], viewState.latitude),
+      ),
+    }
   }
 
   useEffect(() => {
@@ -252,18 +272,36 @@ export function MapBox() {
     fetchUser()
   }, [])
 
+  const supabase = createClient()
+
+  supabase.auth.onAuthStateChange(async () => {
+    const { data } = await supabase.auth.getUser()
+    if (data.user) {
+      setUser(data.user)
+    }
+  })
+
+  const [isVisible, setIsVisible] = useState(true)
+  function onEnter() {
+    setIsVisible(false)
+  }
+
   return (
     <div className='map-container'>
-      {!user && <LoginButton />}
-      <MapLegend colormap={colormap} isVisible={visible}/>
-      <MapFilter setColormapProperties={setColormapProperty} isVisible={visible} />
+      <LoginButton isVisible={!user && !isVisible} />
+      <MapLegend colormap={colormap} isVisible={!isVisible} />
+      <MapFilter
+        setColormapProperties={setColormapProperty}
+        isVisible={!isVisible}
+      />
       <DeckGL
         layers={layers}
         initialViewState={INITIAL_VIEW_STATE}
         controller={selectedBuilding == null}
         getTooltip={getTooltip}
-        onViewStateChange = {({viewState}) => applyViewStateConstraints(viewState)}
-        >
+        onViewStateChange={({ viewState }) =>
+          applyViewStateConstraints(viewState)
+        }>
         <Map reuseMaps mapStyle={mapStyle}>
           <PopupModal
             selectedBuilding={selectedBuilding}
@@ -271,8 +309,7 @@ export function MapBox() {
           />
         </Map>
       </DeckGL>
-      {/* <SplashScreen active={splashActive}/> */}
+      <SplashScreen onEnter={onEnter} isVisible={isVisible} />
     </div>
   )
 }
-
