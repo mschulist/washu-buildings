@@ -18,7 +18,7 @@ export function LoginPage() {
 
     // Check email against the regex
     if (!validateEmail(inputEmail)) {
-      setErrorMessage('Email must end with @wustl.edu')
+      setErrorMessage('Email must be a valid email')
     } else {
       setErrorMessage('')
     }
