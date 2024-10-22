@@ -27,7 +27,7 @@ export function EditableField({
         onChange={(e) => onCheckChange(e.target.checked ? 1 : 0)}
       />
       {isEditing ? (
-        <div className='col-span-2 p-1'>
+        <div className='col-span-1 md:col-span-2 p-1'>
           <textarea
             title='editable field'
             className='textarea textarea-bordered w-full'
@@ -35,7 +35,7 @@ export function EditableField({
             onChange={(e) => onChange(e.target.value)}></textarea>
         </div>
       ) : (
-        <div className='col-span-2'>
+        <div className='col-span-1 md:col-span-2'>
           <label className='label'>{value}</label>
         </div>
       )}

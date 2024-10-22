@@ -93,7 +93,7 @@ export function BuildingEditable({
   }
 
   return (
-    <div className='grid grid-cols-4 gap-4 p-4 rounded-2xl shadow-lg text-foreground'>
+    <div className='grid md:grid-cols-4 md:gap-4 md:p-4 rounded-2xl shadow-lg text-foreground grid-cols-[30%_10%_60%]'>
       <EditableField
         name='Whiteboard'
         value={whiteboardInfo}

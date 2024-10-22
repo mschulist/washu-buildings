@@ -21,7 +21,7 @@ export function MapLegend({
   }
 
   return (
-    <div className='relative w-64 h-64 border border-gray-300 overflow-hidden'>
+    <div className='relative hidden sm:block w-64 h-64 border border-gray-300 overflow-hidden'>
       <div className='z-10 left-3 fixed top-3 overflow-hidden'>
         <ul className='menu bg-base-200 rounded-box w-44 max-h-72 overflow-y-auto'>
           <li>

@@ -60,9 +60,9 @@ export function Building({
   }
 
   return (
-    <div className='relative text-foreground w-full rounded-xl p-6 shadow-lg'>
+    <div className='relative text-foreground w-full rounded-xl p-1 md:p-6 shadow-lg'>
       <BuildingHero buildingDetails={buildingDetails} />
-      <div className='flex flex-col px-16 w-full'>
+      <div className='flex flex-col md:px-16 w-full'>
         <BuildingEditable
           buildingDetails={buildingDetails}
           setBuildingDetails={setBuildingDetails}
