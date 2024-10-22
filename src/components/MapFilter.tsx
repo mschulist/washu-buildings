@@ -33,7 +33,7 @@ export function MapFilter({
 
   return (
     <div className='top-3 right-3 fixed z-10'>
-      <ul className='menu bg-base-200 rounded-box w-44'>
+      <ul className='menu bg-base-200 rounded-box sm:w-44 w-36'>
         <li>
           <details open>
             <summary>Filter</summary>
